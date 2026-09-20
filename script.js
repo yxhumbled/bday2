@@ -1,21 +1,37 @@
 // ============================================================
-// Nour's birthday site — all interactivity lives here.
-// Uses Pointer Events throughout so touch (mobile) and mouse
-// (desktop) both work through the same code path.
+// Nour's birthday site all interactivity lives here.
+// Uses Pointer Events throughout so touch and mouse both work
+// through the same code path.
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', () => {
 
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const html = document.documentElement;
+  const body = document.body;
 
-  // ---- Bottle open ----
+  // ---- Lock the page: nothing scrolls or shows until she taps the bottle ----
+  html.classList.add('locked');
+  body.classList.add('locked');
+
   const bottle = document.getElementById('bottle');
+  const heroHint = document.getElementById('heroHint');
+  const revealWrap = document.getElementById('revealWrap');
+
   bottle.addEventListener('click', () => {
     if (bottle.classList.contains('open')) return;
     bottle.classList.add('open');
+    heroHint.classList.add('fade');
+
     setTimeout(() => {
-      document.querySelector('.letter').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 450);
+      html.classList.remove('locked');
+      body.classList.remove('locked');
+      revealWrap.classList.add('shown');
+
+      setTimeout(() => {
+        document.querySelector('.letter').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 300);
+    }, 500);
   });
 
   // ---- Fade in letter paragraphs on scroll ----
@@ -26,89 +42,139 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { threshold: 0.35 });
     paras.forEach(p => io.observe(p));
   } else {
-    // fallback for very old browsers: just show everything
     paras.forEach(p => p.classList.add('in'));
   }
-  document.querySelector('.letter-open').classList.add('in');
+  const letterOpen = document.querySelector('.letter-open');
+  if (letterOpen) letterOpen.classList.add('in');
 
-  // ---- Ambient floating bubbles ----
+  // ---- Ambient floating hearts ----
   const ambient = document.getElementById('ambient');
-  function spawnAmbientBubble(){
-    const b = document.createElement('div');
-    b.className = 'ambient-bubble';
-    const size = Math.random() * 16 + 6;
-    b.style.width = size + 'px';
-    b.style.height = size + 'px';
-    b.style.left = Math.random() * 100 + 'vw';
-    b.style.setProperty('--drift', (Math.random() * 60 - 30) + 'px');
-    b.style.animationDuration = (Math.random() * 8 + 9) + 's';
-    ambient.appendChild(b);
-    setTimeout(() => b.remove(), 18000);
+  const heartChars = ['♡', '❀', '✦'];
+  function spawnAmbientHeart(){
+    const h = document.createElement('span');
+    h.className = 'ambient-heart';
+    h.textContent = heartChars[Math.floor(Math.random() * heartChars.length)];
+    h.style.left = Math.random() * 100 + 'vw';
+    h.style.setProperty('--drift', (Math.random() * 60 - 30) + 'px');
+    h.style.animationDuration = (Math.random() * 8 + 10) + 's';
+    h.style.color = Math.random() > 0.5 ? '#D98BAE' : '#8FC1D9';
+    ambient.appendChild(h);
+    setTimeout(() => h.remove(), 19000);
   }
   if (!prefersReducedMotion) {
-    for (let i = 0; i < 5; i++) setTimeout(spawnAmbientBubble, i * 900);
-    setInterval(spawnAmbientBubble, 1600);
+    for (let i = 0; i < 5; i++) setTimeout(spawnAmbientHeart, i * 1000);
+    setInterval(spawnAmbientHeart, 1700);
   }
 
-  // ---- Sand drawing (pointer events = works with touch + mouse) ----
-  const sandBox = document.getElementById('sandBox');
-  const sandCanvas = document.getElementById('sandCanvas');
-  const sctx = sandCanvas.getContext('2d');
-  let drawing = false;
+  // ---- Confetti canvas setup (shared by pop finale) ----
+  const canvas = document.getElementById('confetti');
+  const ctx = canvas.getContext('2d');
+  function resizeCanvas(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
 
-  function sizeSandCanvas(){
-    const rect = sandBox.getBoundingClientRect();
-    const ratio = window.devicePixelRatio || 1;
-    sandCanvas.width = rect.width * ratio;
-    sandCanvas.height = rect.height * ratio;
-    sctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+  function heartBurst(originEl){
+    if (prefersReducedMotion) return;
+    const rect = originEl.getBoundingClientRect();
+    const colors = ['#D98BAE', '#8FC1D9', '#C9A6E0', '#F3C89E'];
+    let particles = [];
+    for (let i = 0; i < 60; i++){
+      particles.push({
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+        vx: (Math.random() - 0.5) * 8,
+        vy: (Math.random() * -8) - 3,
+        size: Math.random() * 5 + 4,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        life: 110
+      });
+    }
+    function frame(){
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.vy += 0.22;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= 1;
+        ctx.save();
+        ctx.globalAlpha = Math.max(p.life / 110, 0);
+        ctx.fillStyle = p.color;
+        drawHeart(ctx, p.x, p.y, p.size);
+        ctx.restore();
+      });
+      particles = particles.filter(p => p.life > 0 && p.y < canvas.height + 40);
+      if (particles.length > 0) requestAnimationFrame(frame);
+      else ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    frame();
   }
-  sizeSandCanvas();
-  window.addEventListener('resize', sizeSandCanvas);
 
-  function getPos(e){
-    const rect = sandCanvas.getBoundingClientRect();
-    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  function drawHeart(context, x, y, size){
+    context.beginPath();
+    const topCurveHeight = size * 0.3;
+    context.moveTo(x, y + topCurveHeight);
+    context.bezierCurveTo(x, y, x - size / 2, y, x - size / 2, y + topCurveHeight);
+    context.bezierCurveTo(x - size / 2, y + (size + topCurveHeight) / 2, x, y + (size + topCurveHeight) / 2, x, y + size);
+    context.bezierCurveTo(x, y + (size + topCurveHeight) / 2, x + size / 2, y + (size + topCurveHeight) / 2, x + size / 2, y + topCurveHeight);
+    context.bezierCurveTo(x + size / 2, y, x, y, x, y + topCurveHeight);
+    context.closePath();
+    context.fill();
   }
 
-  function startDraw(e){
-    drawing = true;
-    const p = getPos(e);
-    sctx.beginPath();
-    sctx.moveTo(p.x, p.y);
-    sandCanvas.setPointerCapture && sandCanvas.setPointerCapture(e.pointerId);
-  }
-  function moveDraw(e){
-    if (!drawing) return;
-    const p = getPos(e);
-    sctx.lineTo(p.x, p.y);
-    sctx.strokeStyle = '#5C4326';
-    sctx.lineWidth = 3;
-    sctx.lineCap = 'round';
-    sctx.lineJoin = 'round';
-    sctx.globalAlpha = 0.55;
-    sctx.stroke();
-  }
-  function endDraw(){ drawing = false; }
+  // ---- Pop the bubbles ----
+  const bubbleField = document.getElementById('bubbleField');
+  const surpriseMsg = document.getElementById('surpriseMsg');
+  const signature = document.getElementById('signature');
+  const popColors = [
+    ['#FBD9E6', '#D98BAE'],
+    ['#D9EEF6', '#8FC1D9'],
+    ['#E9DDF6', '#C9A6E0'],
+    ['#FCE9CF', '#F3C89E']
+  ];
+  const totalBubbles = 9;
+  let poppedCount = 0;
 
-  sandCanvas.addEventListener('pointerdown', startDraw);
-  sandCanvas.addEventListener('pointermove', moveDraw);
-  sandCanvas.addEventListener('pointerup', endDraw);
-  sandCanvas.addEventListener('pointercancel', endDraw);
-  sandCanvas.addEventListener('pointerleave', endDraw);
+  for (let i = 0; i < totalBubbles; i++){
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'pop-bubble';
+    btn.setAttribute('aria-label', 'Pop bubble');
+    const [light, deep] = popColors[i % popColors.length];
+    btn.style.background = `radial-gradient(circle at 32% 28%, ${light}, ${deep})`;
 
-  // ---- Tide button ----
-  const tideBtn = document.getElementById('tideBtn');
-  tideBtn.addEventListener('click', () => {
-    if (tideBtn.disabled) return;
-    tideBtn.disabled = true;
-    sandBox.classList.add('wash');
-    setTimeout(() => {
-      sctx.clearRect(0, 0, sandCanvas.width, sandCanvas.height);
-      document.getElementById('surpriseMsg').classList.add('show');
-      bubbleBurst(sandBox);
-    }, 2200);
-  });
+    btn.addEventListener('click', () => {
+      if (btn.classList.contains('popped')) return;
+      btn.classList.add('popped');
+      poppedCount += 1;
+      spawnHeartPops(btn);
+      if (poppedCount === totalBubbles){
+        setTimeout(() => {
+          surpriseMsg.classList.add('show');
+          signature.classList.add('show');
+          heartBurst(bubbleField);
+        }, 350);
+      }
+    }, { passive: true });
+
+    bubbleField.appendChild(btn);
+  }
+
+  function spawnHeartPops(bubbleEl){
+    if (prefersReducedMotion) return;
+    const rect = bubbleEl.getBoundingClientRect();
+    const fieldRect = bubbleField.getBoundingClientRect();
+    for (let i = 0; i < 5; i++){
+      const h = document.createElement('span');
+      h.className = 'heart-pop';
+      h.textContent = '♡';
+      h.style.left = (rect.left - fieldRect.left + rect.width / 2) + 'px';
+      h.style.top = (rect.top - fieldRect.top + rect.height / 2) + 'px';
+      h.style.setProperty('--hx', (Math.random() * 40 - 20) + 'px');
+      bubbleField.style.position = 'relative';
+      bubbleField.appendChild(h);
+      setTimeout(() => h.remove(), 800);
+    }
+  }
 
   // ---- Music player ----
   const bgAudio = document.getElementById('bgAudio');
@@ -132,7 +198,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const playPromise = bgAudio.play();
       if (playPromise && playPromise.catch) {
         playPromise.catch(() => {
-          // song.mp3 missing or blocked — fail quietly, button just resets
           musicPlaying = false;
           musicBtn.classList.remove('playing');
         });
@@ -149,46 +214,5 @@ document.addEventListener('DOMContentLoaded', () => {
       clearInterval(noteTimer);
     }
   });
-
-  // ---- Bubble burst (used when the tide comes in) ----
-  const bcanvas = document.getElementById('bubbles');
-  const bctx = bcanvas.getContext('2d');
-  function resizeB(){ bcanvas.width = window.innerWidth; bcanvas.height = window.innerHeight; }
-  resizeB();
-  window.addEventListener('resize', resizeB);
-
-  function bubbleBurst(originEl){
-    if (prefersReducedMotion) return;
-    const rect = originEl.getBoundingClientRect();
-    let particles = [];
-    for (let i = 0; i < 40; i++){
-      particles.push({
-        x: rect.left + rect.width / 2 + (Math.random() - 0.5) * rect.width * 0.6,
-        y: rect.top + rect.height,
-        vy: -(Math.random() * 2 + 1.5),
-        vx: (Math.random() - 0.5) * 0.6,
-        r: Math.random() * 7 + 3,
-        life: 140,
-        alpha: Math.random() * 0.4 + 0.3
-      });
-    }
-    function frame(){
-      bctx.clearRect(0, 0, bcanvas.width, bcanvas.height);
-      particles.forEach(p => {
-        p.y += p.vy;
-        p.x += p.vx;
-        p.life -= 1;
-        bctx.beginPath();
-        bctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        bctx.strokeStyle = `rgba(46,110,134,${p.alpha})`;
-        bctx.lineWidth = 1.4;
-        bctx.stroke();
-      });
-      particles = particles.filter(p => p.life > 0);
-      if (particles.length > 0) requestAnimationFrame(frame);
-      else bctx.clearRect(0, 0, bcanvas.width, bcanvas.height);
-    }
-    frame();
-  }
 
 });
