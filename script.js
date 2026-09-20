@@ -17,11 +17,51 @@ document.addEventListener('DOMContentLoaded', () => {
   const bottle = document.getElementById('bottle');
   const heroHint = document.getElementById('heroHint');
   const revealWrap = document.getElementById('revealWrap');
+  const bgAudio = document.getElementById('bgAudio');
+  const musicBtn = document.getElementById('musicBtn');
+  let musicPlaying = false;
+  let noteTimer = null;
+
+  function spawnNote(){
+    const note = document.createElement('span');
+    note.className = 'music-note';
+    note.textContent = Math.random() > 0.5 ? '♪' : '♫';
+    note.style.left = '-6px';
+    note.style.bottom = '58px';
+    note.style.setProperty('--nx', (Math.random() * 30 - 30) + 'px');
+    musicBtn.parentElement.appendChild(note);
+    setTimeout(() => note.remove(), 2400);
+  }
+
+  function startMusic(){
+    if (musicPlaying) return;
+    const playPromise = bgAudio.play();
+    if (playPromise && playPromise.catch) {
+      playPromise.catch(() => {
+        // song.mp3 missing or blocked fails quietly button just resets
+        musicPlaying = false;
+        musicBtn.classList.remove('playing');
+      });
+    }
+    musicPlaying = true;
+    musicBtn.classList.add('playing');
+    musicBtn.setAttribute('aria-label', 'Pause music');
+    if (!prefersReducedMotion) noteTimer = setInterval(spawnNote, 900);
+  }
+
+  function stopMusic(){
+    bgAudio.pause();
+    musicPlaying = false;
+    musicBtn.classList.remove('playing');
+    musicBtn.setAttribute('aria-label', 'Play music');
+    clearInterval(noteTimer);
+  }
 
   bottle.addEventListener('click', () => {
     if (bottle.classList.contains('open')) return;
     bottle.classList.add('open');
     heroHint.classList.add('fade');
+    startMusic();
 
     setTimeout(() => {
       html.classList.remove('locked');
@@ -32,6 +72,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.letter').scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 300);
     }, 500);
+  });
+
+  musicBtn.addEventListener('click', () => {
+    if (!musicPlaying) startMusic();
+    else stopMusic();
   });
 
   // ---- Fade in letter paragraphs on scroll ----
@@ -175,44 +220,5 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => h.remove(), 800);
     }
   }
-
-  // ---- Music player ----
-  const bgAudio = document.getElementById('bgAudio');
-  const musicBtn = document.getElementById('musicBtn');
-  let musicPlaying = false;
-  let noteTimer = null;
-
-  function spawnNote(){
-    const note = document.createElement('span');
-    note.className = 'music-note';
-    note.textContent = Math.random() > 0.5 ? '♪' : '♫';
-    note.style.left = '-6px';
-    note.style.bottom = '58px';
-    note.style.setProperty('--nx', (Math.random() * 30 - 30) + 'px');
-    musicBtn.parentElement.appendChild(note);
-    setTimeout(() => note.remove(), 2400);
-  }
-
-  musicBtn.addEventListener('click', () => {
-    if (!musicPlaying){
-      const playPromise = bgAudio.play();
-      if (playPromise && playPromise.catch) {
-        playPromise.catch(() => {
-          musicPlaying = false;
-          musicBtn.classList.remove('playing');
-        });
-      }
-      musicPlaying = true;
-      musicBtn.classList.add('playing');
-      musicBtn.setAttribute('aria-label', 'Pause music');
-      if (!prefersReducedMotion) noteTimer = setInterval(spawnNote, 900);
-    } else {
-      bgAudio.pause();
-      musicPlaying = false;
-      musicBtn.classList.remove('playing');
-      musicBtn.setAttribute('aria-label', 'Play music');
-      clearInterval(noteTimer);
-    }
-  });
 
 });
