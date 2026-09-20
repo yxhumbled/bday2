@@ -7,9 +7,9 @@
 
 <!--
   ============================================================
-  QUICK EDIT GUIDE — search "EDIT:" for the one thing left:
+  QUICK EDIT GUIDE search "EDIT:" for the one thing left
   the music file. Everything else is already written for Nour.
-  Three files total: index.html, style.css, script.js — keep
+  Three files total index.html style.css script.js keep
   all three in the same folder when you upload to GitHub Pages.
   ============================================================
 -->
@@ -19,26 +19,26 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Public+Sans:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="locked">
 
 <div class="ambient" id="ambient"></div>
-<canvas id="bubbles"></canvas>
+<canvas id="confetti"></canvas>
 
 <!--
   EDIT: drop an mp3 file named "song.mp3" in this same folder to
-  play music. Won't be included here since I can't ship a
-  copyrighted song — the button just does nothing until it exists.
+  play music. Not included here since a real song cant be shipped
+  in code the button just does nothing until that file exists.
 -->
 <audio id="bgAudio" src="song.mp3" loop preload="none"></audio>
 
 <div class="music-player">
-  <button class="music-btn" id="musicBtn" aria-label="Play music">
+  <button class="music-btn" id="musicBtn" aria-label="Play music" type="button">
     <svg class="vinyl" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="10" fill="#F2F7F8"/>
-      <circle cx="12" cy="12" r="10" stroke="#DCEEF2" stroke-width="1"/>
-      <circle cx="12" cy="12" r="3.4" fill="#2E6E86"/>
-      <circle cx="12" cy="12" r="1" fill="#F2F7F8"/>
-      <circle cx="12" cy="12" r="6.6" stroke="#CFE0E3" stroke-width="0.6" fill="none"/>
+      <circle cx="12" cy="12" r="10" fill="#FBF6F2"/>
+      <circle cx="12" cy="12" r="10" stroke="#F3D9E4" stroke-width="1"/>
+      <circle cx="12" cy="12" r="3.4" fill="#D98BAE"/>
+      <circle cx="12" cy="12" r="1" fill="#FBF6F2"/>
+      <circle cx="12" cy="12" r="6.6" stroke="#F3D9E4" stroke-width="0.6" fill="none"/>
     </svg>
   </button>
 </div>
@@ -51,125 +51,121 @@
 
   <button class="bottle" id="bottle" aria-label="Open the bottle" type="button">
     <svg viewBox="0 0 100 180" xmlns="http://www.w3.org/2000/svg">
-      <rect x="38" y="14" width="24" height="14" rx="3" fill="#3E7C9A" class="cork"/>
+      <rect x="38" y="14" width="24" height="14" rx="3" fill="#D98BAE" class="cork"/>
       <path d="M40 26 L40 44 Q40 50 34 56 L28 66 Q24 74 24 86 L24 158 Q24 170 36 170 L64 170 Q76 170 76 158 L76 86 Q76 74 72 66 L66 56 Q60 50 60 44 L60 26 Z"
-            fill="#DCEEF2" stroke="#2E6E86" stroke-width="2" opacity="0.85"/>
-      <rect x="34" y="96" width="32" height="22" rx="2" fill="#F2F7F8" stroke="#2E6E86" stroke-width="1.2" class="note-in-bottle"/>
+            fill="#FCEFF3" stroke="#D98BAE" stroke-width="2" opacity="0.9"/>
+      <rect x="34" y="96" width="32" height="22" rx="2" fill="#FBF6F2" stroke="#D98BAE" stroke-width="1.2" class="note-in-bottle"/>
     </svg>
   </button>
 
-  <p class="hero-hint">tap the bottle</p>
-  <div class="scroll-cue"><span></span>keep going</div>
+  <p class="hero-hint" id="heroHint">tap the bottle</p>
 </section>
 
-<svg class="wave-divider" viewBox="0 0 500 60" preserveAspectRatio="none">
-  <path d="M0,30 C80,10 130,50 210,30 C290,10 340,50 420,30 C460,20 480,25 500,30 L500,60 L0,60 Z" fill="#E7F0F1"/>
-</svg>
+<!-- ============ EVERYTHING STAYS HIDDEN UNTIL SHE TAPS ============ -->
+<div class="reveal-wrap" id="revealWrap">
 
-<!-- ============ THE LETTER ============ -->
-<section class="letter wrap">
-  <p class="letter-open">Dear Nour,</p>
-
-  <p>You know we talk more than either of us probably admits out loud — so it felt strange to just send you a text today of all days. This one gets an actual page.</p>
-
-  <p>You've always had this thing where you just know what you want and go get it — confident in a way that isn't loud about it, it's just there. Clever enough to make it look easy. And somehow you make even the most basic outfit look like it took effort when I know it took you five minutes.</p>
-
-  <p>Half the time I picture you, you're either in the water or with a pencil in your hand — swimming like it's the easiest thing in the world, or drawing something out of nothing. Add blue to that (obviously), a beach somewhere, and a plate of something annoyingly healthy, and that's just... you, basically.</p>
-
-  <p>But if I had to pick one thing to replay, it's the school trips. Not even one specific moment — just the whole chaos of it, the two of us finding each other in the middle of it every time. Those are still some of my favorite memories, easily.</p>
-
-  <p>So here's to another year of you being exactly this — a little too confident, a little too clever, and somehow still finding time to text me back immediately. Happy birthday.</p>
-
-  <svg class="divider" viewBox="0 0 120 20" fill="none">
-    <path d="M2 10 Q 20 2, 40 10 T 78 10 T 118 10" stroke="#2E6E86" stroke-width="1.4" stroke-linecap="round"/>
+  <svg class="wave-divider" viewBox="0 0 500 60" preserveAspectRatio="none">
+    <path d="M0,30 C80,10 130,50 210,30 C290,10 340,50 420,30 C460,20 480,25 500,30 L500,60 L0,60 Z" fill="#FBF0F4"/>
   </svg>
-</section>
 
-<!-- ============ MIXTAPE ============ -->
-<section class="mixtape-section wrap">
-  <p class="mixtape-title">a playlist, if she was one</p>
-  <p class="mixtape-sub">side A</p>
-  <div class="tracklist">
-    <div class="track">
-      <span class="track-num">01</span>
-      <div class="track-body">
-        <p class="track-title">Confident (Intro)</p>
-        <p class="track-desc">walks into any room like she already knows how it ends</p>
+  <!-- ============ THE LETTER ============ -->
+  <section class="letter wrap">
+    <p class="letter-open">Dear Nour</p>
+
+    <p>You know we talk more than either of us probably admits out loud. It felt strange to just send you a text today of all days. This one gets an actual page.</p>
+
+    <p>You've always had this thing where you just know what you want and go get it. Confident in a way that isn't loud about it. It's just there. Clever enough to make it look easy. And somehow you make even the most basic outfit look like it took effort when I know it took you five minutes.</p>
+
+    <p>Half the time I picture you either in the water or with a pencil in your hand. Swimming like it's the easiest thing in the world or drawing something out of nothing. Add blue to that (obviously) a beach somewhere and a plate of something annoyingly healthy. That's just you basically.</p>
+
+    <p>But if I had to pick one thing to replay it's the school trips. Not even one specific moment. Just the whole chaos of it and the two of us finding each other in the middle of it every time. Those are still some of my favorite memories. Easily.</p>
+
+    <p>So here's to another year of you being exactly this. A little too confident. A little too clever. And somehow still finding time to text me back immediately. Happy birthday.</p>
+
+    <svg class="divider" viewBox="0 0 120 20" fill="none">
+      <path d="M2 10 Q 20 2, 40 10 T 78 10 T 118 10" stroke="#D98BAE" stroke-width="1.4" stroke-linecap="round"/>
+    </svg>
+  </section>
+
+  <svg class="wave-divider" viewBox="0 0 500 60" preserveAspectRatio="none">
+    <path d="M0,30 C80,50 130,10 210,30 C290,50 340,10 420,30 C460,40 480,35 500,30 L500,60 L0,60 Z" fill="#FBF0F4" opacity="0.6"/>
+  </svg>
+
+  <!-- ============ MIXTAPE ============ -->
+  <section class="mixtape-section wrap">
+    <p class="mixtape-title">a playlist if she was one</p>
+    <p class="mixtape-sub">side A</p>
+    <div class="tracklist">
+      <div class="track">
+        <span class="track-num">01</span>
+        <div class="track-body">
+          <p class="track-title">Confident (Intro)</p>
+          <p class="track-desc">walks into any room like she already knows how it ends</p>
+        </div>
+      </div>
+      <div class="track">
+        <span class="track-num">02</span>
+        <div class="track-body">
+          <p class="track-title">Smarter Than She Lets On</p>
+          <p class="track-desc">clever in a way that only shows up right when you need it</p>
+        </div>
+      </div>
+      <div class="track">
+        <span class="track-num">03</span>
+        <div class="track-body">
+          <p class="track-title">Effortless (Stylish Remix)</p>
+          <p class="track-desc">makes looking good seem like the least interesting thing about her</p>
+        </div>
+      </div>
+      <div class="track">
+        <span class="track-num">04</span>
+        <div class="track-body">
+          <p class="track-title">Underwater</p>
+          <p class="track-desc">the only place she's ever actually quiet</p>
+        </div>
+      </div>
+      <div class="track">
+        <span class="track-num">05</span>
+        <div class="track-body">
+          <p class="track-title">Sketchbook No Skips</p>
+          <p class="track-desc">for every drawing she said was "just messing around"</p>
+        </div>
+      </div>
+      <div class="track">
+        <span class="track-num">06</span>
+        <div class="track-body">
+          <p class="track-title">Field Trip (Interlude)</p>
+          <p class="track-desc">every school trip condensed into one very loud memory</p>
+        </div>
+      </div>
+      <div class="track">
+        <span class="track-num">07</span>
+        <div class="track-body">
+          <p class="track-title">Blue</p>
+          <p class="track-desc">her favorite color got its own track that's how it works</p>
+        </div>
       </div>
     </div>
-    <div class="track">
-      <span class="track-num">02</span>
-      <div class="track-body">
-        <p class="track-title">Smarter Than She Lets On</p>
-        <p class="track-desc">clever in a way that only shows up right when you need it</p>
-      </div>
-    </div>
-    <div class="track">
-      <span class="track-num">03</span>
-      <div class="track-body">
-        <p class="track-title">Effortless (Stylish Remix)</p>
-        <p class="track-desc">makes looking good seem like the least interesting thing about her</p>
-      </div>
-    </div>
-    <div class="track">
-      <span class="track-num">04</span>
-      <div class="track-body">
-        <p class="track-title">Underwater</p>
-        <p class="track-desc">for the swimmer — the one place she's actually quiet</p>
-      </div>
-    </div>
-    <div class="track">
-      <span class="track-num">05</span>
-      <div class="track-body">
-        <p class="track-title">Sketchbook, No Skips</p>
-        <p class="track-desc">for every drawing she said was "just messing around"</p>
-      </div>
-    </div>
-    <div class="track">
-      <span class="track-num">06</span>
-      <div class="track-body">
-        <p class="track-title">Field Trip (Interlude)</p>
-        <p class="track-desc">every school trip, condensed into one very loud memory</p>
-      </div>
-    </div>
-    <div class="track">
-      <span class="track-num">07</span>
-      <div class="track-body">
-        <p class="track-title">Blue</p>
-        <p class="track-desc">her favorite color got its own track, that's how it works</p>
-      </div>
-    </div>
-  </div>
-</section>
+  </section>
 
-<svg class="wave-divider" viewBox="0 0 500 60" preserveAspectRatio="none">
-  <path d="M0,30 C80,50 130,10 210,30 C290,50 340,10 420,30 C460,40 480,35 500,30 L500,60 L0,60 Z" fill="#E7F0F1" opacity="0.5"/>
-</svg>
+  <svg class="wave-divider" viewBox="0 0 500 60" preserveAspectRatio="none">
+    <path d="M0,30 C80,10 130,50 210,30 C290,10 340,50 420,30 C460,20 480,25 500,30 L500,60 L0,60 Z" fill="#FBF0F4"/>
+  </svg>
 
-<!-- ============ SAND / CLOSING ============ -->
-<section class="sand-section wrap">
-  <p class="sand-title">leave your mark</p>
-  <p class="sand-sub">draw something in the sand — then let the tide take it</p>
+  <!-- ============ POP THE BUBBLES ============ -->
+  <section class="pop-section wrap">
+    <p class="pop-title">pop them all</p>
+    <p class="pop-sub">tap every bubble to get to the last part</p>
 
-  <div class="sand-box" id="sandBox">
-    <canvas id="sandCanvas"></canvas>
-    <div class="tide">
-      <svg viewBox="0 0 480 220" preserveAspectRatio="none">
-        <path d="M0,60 C60,20 120,90 180,50 C240,10 300,80 360,40 C420,10 460,50 480,30 L480,220 L0,220 Z" fill="#3E7C9A" opacity="0.92"/>
-        <path d="M0,90 C70,50 140,110 210,80 C280,50 340,100 480,70 L480,220 L0,220 Z" fill="#2E6E86" opacity="0.9"/>
-      </svg>
-    </div>
-  </div>
+    <div class="bubble-field" id="bubbleField"></div>
 
-  <p class="sand-hint">draw with your finger</p>
-  <button class="tide-btn" id="tideBtn" type="button">let the tide in</button>
+    <p class="surprise-msg" id="surpriseMsg">Happy birthday Nour. Here's to twenty. Go be confident clever and a little too stylish about it.</p>
+    <p class="signature" id="signature">Amer</p>
+  </section>
 
-  <p class="surprise-msg" id="surpriseMsg">Happy birthday, Nour. Here's to twenty — go be confident, clever, and a little too stylish about it. 🌊</p>
+  <footer>made by hand for you</footer>
 
-  <p class="signature">— Amer</p>
-</section>
-
-<footer>made by hand, for you</footer>
+</div>
 
 <script src="script.js"></script>
 </body>
