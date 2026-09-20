@@ -34,42 +34,53 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function startMusic(){
-    if (musicPlaying) return;
+    if (musicPlaying || !bgAudio) return;
     const playPromise = bgAudio.play();
     if (playPromise && playPromise.catch) {
-      playPromise.catch(() => {
+      playPromise.catch((err) => {
         // song.mp3 missing or blocked fails quietly button just resets
+        console.warn('music could not start', err);
         musicPlaying = false;
-        musicBtn.classList.remove('playing');
+        if (musicBtn) musicBtn.classList.remove('playing');
       });
     }
     musicPlaying = true;
-    musicBtn.classList.add('playing');
-    musicBtn.setAttribute('aria-label', 'Pause music');
+    if (musicBtn) {
+      musicBtn.classList.add('playing');
+      musicBtn.setAttribute('aria-label', 'Pause music');
+    }
     if (!prefersReducedMotion) noteTimer = setInterval(spawnNote, 900);
   }
 
   function stopMusic(){
+    if (!bgAudio) return;
     bgAudio.pause();
     musicPlaying = false;
-    musicBtn.classList.remove('playing');
-    musicBtn.setAttribute('aria-label', 'Play music');
+    if (musicBtn) {
+      musicBtn.classList.remove('playing');
+      musicBtn.setAttribute('aria-label', 'Play music');
+    }
     clearInterval(noteTimer);
   }
 
   bottle.addEventListener('click', () => {
     if (bottle.classList.contains('open')) return;
-    bottle.classList.add('open');
-    heroHint.classList.add('fade');
+
+    // music starts first, before anything else, so nothing below
+    // can ever prevent it from firing
     startMusic();
+
+    bottle.classList.add('open');
+    if (heroHint) heroHint.classList.add('fade');
 
     setTimeout(() => {
       html.classList.remove('locked');
       body.classList.remove('locked');
-      revealWrap.classList.add('shown');
+      if (revealWrap) revealWrap.classList.add('shown');
 
       setTimeout(() => {
-        document.querySelector('.letter').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const letterEl = document.querySelector('.letter');
+        if (letterEl) letterEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 300);
     }, 500);
   });
