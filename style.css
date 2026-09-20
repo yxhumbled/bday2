@@ -1,13 +1,14 @@
 :root{
-  --paper:      #F2F7F8;
-  --panel:      #E7F0F1;
-  --ink:        #223640;
-  --ink-soft:   #5E7580;
-  --ocean:      #2E6E86;
-  --ocean-deep: #1F4F63;
-  --sand:       #E7C99B;
-  --coral:      #E08A67;
-  --line:       #CFE0E3;
+  --paper:      #FBF6F2;
+  --panel:      #FBF0F4;
+  --ink:        #4A3B47;
+  --ink-soft:   #8A7683;
+  --pink:       #D98BAE;
+  --pink-deep:  #C4658F;
+  --blue:       #8FC1D9;
+  --lavender:   #C9A6E0;
+  --peach:      #F3C89E;
+  --line:       #F0DDE5;
 
   --serif: 'Fraunces', Georgia, serif;
   --sans: 'Public Sans', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -18,7 +19,7 @@ html{ scroll-behavior: smooth; }
 
 body{
   margin: 0;
-  background: linear-gradient(120deg, #F2F7F8, #E9F2F3, #EEF6F5, #F2F7F8);
+  background: linear-gradient(120deg, #FBF6F2, #FBF0F4, #F5F0FA, #FBF6F2);
   background-size: 300% 300%;
   animation: gradientShift 18s ease infinite;
   color: var(--ink);
@@ -36,25 +37,33 @@ body{
   body{ animation: none; background: var(--paper); }
 }
 
-::selection{ background: var(--ocean); color: #fff; }
-:focus-visible{ outline: 2px solid var(--ocean-deep); outline-offset: 3px; }
+/* ---- locked state: absolutely nothing scrolls or shows until tap ---- */
+html.locked, body.locked{
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
 
-.wrap{ max-width: 620px; margin: 0 auto; padding: 0 24px; }
+::selection{ background: var(--pink); color: #fff; }
+:focus-visible{ outline: 2px solid var(--pink-deep); outline-offset: 3px; }
 
-/* ============ AMBIENT BUBBLES ============ */
+.wrap{ max-width: 600px; margin: 0 auto; padding: 0 24px; }
+
+/* ============ AMBIENT HEARTS ============ */
 
 .ambient{ position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
-.ambient-bubble{
-  position: absolute; bottom: -40px; border-radius: 50%;
-  border: 1.2px solid rgba(46,110,134,0.2);
-  background: rgba(231,240,241,0.35);
+.ambient-heart{
+  position: absolute;
+  bottom: -30px;
+  font-size: 16px;
   animation: rise linear infinite;
+  opacity: 0;
 }
 @keyframes rise{
-  0%{ transform: translateY(0) translateX(0); opacity: 0; }
-  10%{ opacity: 0.75; }
-  90%{ opacity: 0.45; }
-  100%{ transform: translateY(-110vh) translateX(var(--drift, 20px)); opacity: 0; }
+  0%{ transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+  10%{ opacity: 0.7; }
+  90%{ opacity: 0.4; }
+  100%{ transform: translateY(-108vh) translateX(var(--drift, 20px)) rotate(20deg); opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce){ .ambient{ display: none; } }
 
@@ -75,14 +84,12 @@ body{
 .hero-name{
   font-family: var(--serif); font-weight: 600;
   font-size: clamp(2.4rem, 12vw, 3.4rem);
-  color: var(--ocean-deep);
+  color: var(--pink-deep);
   margin: 0 0 4px;
   letter-spacing: -0.01em;
 }
 
-.hero-date{
-  font-family: var(--sans); font-size: 0.85rem; color: var(--ocean); margin: 0 0 44px;
-}
+.hero-date{ font-family: var(--sans); font-size: 0.85rem; color: var(--pink); margin: 0 0 44px; }
 
 .bottle{
   width: min(150px, 42vw);
@@ -101,51 +108,36 @@ body{
   0%, 100%{ transform: translateY(0) rotate(-1.5deg); }
   50%{ transform: translateY(-10px) rotate(1.5deg); }
 }
-@media (prefers-reduced-motion: reduce){
-  .bottle:not(.open){ animation: none; }
-}
+@media (prefers-reduced-motion: reduce){ .bottle:not(.open){ animation: none; } }
 
 .cork{
   transition: transform 0.6s cubic-bezier(.5,-0.2,.3,1.4), opacity 0.6s ease;
   transform-origin: 50% 100%;
 }
-.bottle.open .cork{
-  transform: translate(38px, -30px) rotate(35deg);
-  opacity: 0;
-}
+.bottle.open .cork{ transform: translate(38px, -30px) rotate(35deg); opacity: 0; }
 
 .note-in-bottle{
   transition: transform 0.5s ease 0.15s, opacity 0.5s ease 0.15s;
   opacity: 0;
   transform: translateY(6px);
 }
-.bottle.open .note-in-bottle{
-  opacity: 1;
-  transform: translateY(-10px);
-}
+.bottle.open .note-in-bottle{ opacity: 1; transform: translateY(-10px); }
 
 .hero-hint{
   margin-top: 22px;
   font-size: 0.85rem;
   color: var(--ink-soft);
-  transition: opacity 0.3s ease;
+  transition: opacity 0.4s ease;
 }
-.bottle.open ~ .hero-hint{ opacity: 0; }
+.hero-hint.fade{ opacity: 0; }
 
-.scroll-cue{
-  position: absolute;
-  bottom: 28px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.75rem;
-  color: var(--ink-soft);
+/* ============ REVEAL WRAP (hidden until she taps) ============ */
+
+.reveal-wrap{
   opacity: 0;
-  transition: opacity 0.6s ease 0.4s;
+  transition: opacity 1s ease;
 }
-.bottle.open ~ .scroll-cue{ opacity: 0.85; }
-.scroll-cue span{ width: 1px; height: 26px; background: linear-gradient(var(--ocean), transparent); }
+.reveal-wrap.shown{ opacity: 1; }
 
 /* ============ WAVE DIVIDERS ============ */
 
@@ -165,9 +157,7 @@ body{
   0%, 100%{ transform: translateX(0) translateY(0); }
   50%{ transform: translateX(-14px) translateY(3px); }
 }
-@media (prefers-reduced-motion: reduce){
-  .wave-divider path{ animation: none; }
-}
+@media (prefers-reduced-motion: reduce){ .wave-divider path{ animation: none; } }
 
 /* ============ LETTER ============ */
 
@@ -176,7 +166,7 @@ body{
 .letter-open{
   font-family: var(--serif); font-style: italic;
   font-size: clamp(1.5rem, 6vw, 1.9rem);
-  font-weight: 500; color: var(--ocean-deep); margin: 0 0 34px;
+  font-weight: 500; color: var(--pink-deep); margin: 0 0 34px;
 }
 
 .letter p{
@@ -205,101 +195,101 @@ body{
   font-family: var(--serif); font-style: italic; color: var(--ink-soft);
   font-size: 1.05rem; margin: 0 0 6px; text-align: center;
 }
-.mixtape-sub{
-  text-align: center; font-size: 0.8rem; color: var(--ink-soft); margin: 0 0 34px;
-}
+.mixtape-sub{ text-align: center; font-size: 0.8rem; color: var(--ink-soft); margin: 0 0 34px; }
 
-.tracklist{
-  background: var(--panel);
-  border-radius: 4px;
-  padding: 8px 6px;
-}
+.tracklist{ background: var(--panel); border-radius: 4px; padding: 8px 6px; }
 
 .track{
-  display: flex;
-  align-items: baseline;
-  gap: 14px;
-  padding: 16px 16px;
-  border-bottom: 1px solid var(--line);
+  display: flex; align-items: baseline; gap: 14px;
+  padding: 16px 16px; border-bottom: 1px solid var(--line);
 }
 .track:last-child{ border-bottom: none; }
 
-.track-num{
-  font-family: var(--sans); font-size: 0.75rem; color: var(--ocean); min-width: 16px;
-}
+.track-num{ font-family: var(--sans); font-size: 0.75rem; color: var(--pink-deep); min-width: 16px; }
 .track-body{ flex: 1; min-width: 0; }
-.track-title{
-  font-family: var(--serif); font-weight: 500; font-size: 1rem; color: var(--ink); margin: 0 0 3px;
-}
+.track-title{ font-family: var(--serif); font-weight: 500; font-size: 1rem; color: var(--ink); margin: 0 0 3px; }
 .track-desc{ font-size: 0.84rem; color: var(--ink-soft); margin: 0; }
 
-/* ============ SAND / CLOSING ============ */
+/* ============ POP THE BUBBLES ============ */
 
-.sand-section{ padding: 10px 0 40px; text-align: center; position: relative; z-index: 2; }
+.pop-section{ padding: 10px 0 50px; text-align: center; position: relative; z-index: 2; }
 
-.sand-title{
+.pop-title{
   font-family: var(--serif); font-style: italic; color: var(--ink-soft);
-  font-size: 1.05rem; margin: 0 0 10px;
+  font-size: 1.05rem; margin: 0 0 8px;
 }
-.sand-sub{ font-size: 0.85rem; color: var(--ink-soft); margin: 0 0 28px; }
+.pop-sub{ font-size: 0.85rem; color: var(--ink-soft); margin: 0 0 34px; }
 
-.sand-box{
-  position: relative;
-  width: 100%;
-  max-width: 480px;
-  height: 200px;
+.bubble-field{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  max-width: 420px;
   margin: 0 auto;
-  background: linear-gradient(180deg, #EFDFBB, #E7D2A2);
-  border-radius: 6px;
-  overflow: hidden;
-  touch-action: none;
-  cursor: crosshair;
 }
 
-#sandCanvas{ position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-
-.tide{
+.pop-bubble{
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  padding: 0;
+  transition: transform 0.35s cubic-bezier(.5,1.8,.4,1), opacity 0.35s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  box-shadow: inset -4px -6px 10px rgba(0,0,0,0.06), inset 4px 6px 10px rgba(255,255,255,0.5);
+}
+.pop-bubble::after{
+  content: '';
   position: absolute;
-  left: 0; right: 0; bottom: -100%;
-  height: 100%;
-  transition: bottom 2.4s cubic-bezier(.6,0,.2,1);
+  top: 12px; left: 14px;
+  width: 12px; height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.6);
+}
+.pop-bubble.popped{
+  transform: scale(0);
+  opacity: 0;
   pointer-events: none;
 }
-.sand-box.wash .tide{ bottom: 0; }
-.tide svg{ width: 100%; height: 100%; display: block; }
 
-.sand-hint{ margin-top: 16px; font-size: 0.8rem; color: var(--ink-soft); }
-
-.tide-btn{
-  margin-top: 20px;
-  font-family: var(--sans); font-size: 0.9rem; font-weight: 500; color: #fff;
-  background: var(--ocean); border: none; padding: 13px 26px; border-radius: 999px;
-  cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease;
-  touch-action: manipulation;
+.heart-pop{
+  position: absolute;
+  font-size: 13px;
+  color: var(--pink-deep);
+  pointer-events: none;
+  animation: heartFloat 0.75s ease-out forwards;
 }
-.tide-btn:hover{ background: var(--ocean-deep); transform: translateY(-1px); }
-.tide-btn:disabled{ opacity: 0.5; cursor: default; transform: none; }
+@keyframes heartFloat{
+  0%{ opacity: 1; transform: translate(0,0) scale(1); }
+  100%{ opacity: 0; transform: translate(var(--hx, 10px), -46px) scale(0.5); }
+}
 
 .surprise-msg{
-  font-family: var(--serif); font-style: italic; font-size: 1.3rem; color: var(--ocean-deep);
-  max-width: 40ch; margin: 30px auto 0;
+  font-family: var(--serif); font-style: italic; font-size: 1.25rem; color: var(--pink-deep);
+  max-width: 40ch; margin: 40px auto 0;
   opacity: 0; transform: translateY(8px);
   transition: opacity 0.8s ease, transform 0.8s ease;
 }
 .surprise-msg.show{ opacity: 1; transform: translateY(0); }
 
 .signature{
-  margin-top: 46px; font-family: var(--serif); font-style: italic;
+  margin-top: 22px; font-family: var(--serif); font-style: italic;
   font-size: 1.1rem; color: var(--ink-soft);
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.8s ease 0.15s, transform 0.8s ease 0.15s;
 }
+.signature.show{ opacity: 1; transform: translateY(0); }
 
 footer{
   text-align: center; padding: 26px 0 46px; font-size: 0.78rem;
   color: var(--ink-soft); opacity: 0.6; position: relative; z-index: 2;
 }
 
-canvas#bubbles{ position: fixed; inset: 0; pointer-events: none; z-index: 50; }
+canvas#confetti{ position: fixed; inset: 0; pointer-events: none; z-index: 50; }
 
 /* ============ MUSIC PLAYER ============ */
 
@@ -311,7 +301,7 @@ canvas#bubbles{ position: fixed; inset: 0; pointer-events: none; z-index: 50; }
 }
 .music-btn{
   width: 52px; height: 52px; border-radius: 50%; border: none;
-  background: var(--ocean-deep); box-shadow: 0 8px 20px -8px rgba(31,79,99,0.55);
+  background: var(--pink-deep); box-shadow: 0 8px 20px -8px rgba(196,101,143,0.55);
   cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
@@ -323,7 +313,7 @@ canvas#bubbles{ position: fixed; inset: 0; pointer-events: none; z-index: 50; }
 
 .music-note{
   position: absolute; font-family: var(--serif); font-style: italic; font-size: 1.1rem;
-  color: var(--ocean-deep); pointer-events: none;
+  color: var(--pink-deep); pointer-events: none;
   animation: floatNote 2.4s ease-out forwards;
 }
 @keyframes floatNote{
@@ -337,6 +327,6 @@ canvas#bubbles{ position: fixed; inset: 0; pointer-events: none; z-index: 50; }
 /* ============ SMALL SCREENS ============ */
 
 @media (max-width: 380px){
-  .sand-box{ height: 170px; }
+  .pop-bubble{ width: 50px; height: 50px; }
   .track{ padding: 14px 12px; }
 }
